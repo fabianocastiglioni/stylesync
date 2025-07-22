@@ -399,4 +399,31 @@
                         }
                     }
                 } catch (error) {
-                    console.error("Erro
+                    console.error("Erro ao processar uma imagem:", error);
+                }
+            }
+        }
+        
+        // Função para resetar a aplicação
+        resetButton.addEventListener('click', () => {
+            // Limpa variáveis
+            envImageBase64 = null;
+            userImageBase64 = null;
+
+            // Reseta a UI
+            envImageInput.value = '';
+            userImageInput.value = '';
+            
+            envImagePreview.classList.add('hidden');
+            envLabel.classList.remove('hidden');
+            userImagePreview.classList.add('hidden');
+            userLabel.classList.remove('hidden');
+
+            uploadSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            outfitsGrid.innerHTML = '';
+        });
+
+    </script>
+</body>
+</html>
