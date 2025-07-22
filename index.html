@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleSync: Seu Estilo em Sintonia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .file-input-container:hover {
+            background-color: #f9fafb;
+        }
+        .file-input-container input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-input-label {
+            text-align: center;
+            color: #6b7280;
+        }
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .image-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <!-- Cabeçalho -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-playfair text-gray-900">StyleSync</h1>
+            <p class="text-md md:text-lg text-gray-600 mt-2">Seu estilo em perfeita sintonia com qualquer ambiente.</p>
+        </header>
+
+        <!-- Seção de Upload -->
+        <div id="upload-section" class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Upload do Ambiente -->
+                <div>
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700">1. Envie a foto do ambiente</h2>
+                    <div id="env-input-container" class="file-input-container">
+                        <input type="file" id="env-image-input" accept="image/*">
+                        <div id="env-label" class="file-input-label">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            <span class="mt-2 block text-sm font-medium">Clique para enviar</span>
+                        </div>
+                        <img id="env-image-preview" class="hidden image-preview" alt="Preview do Ambiente">
+                    </div>
+                </div>
+                <!-- Upload do Usuário -->
+                <div>
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700">2. Envie sua foto</h2>
+                    <div id="user-input-container" class="file-input-container">
+                        <input type="file" id="user-image-input" accept="image/*">
+                        <div id="user-label" class="file-input-label">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            <span class="mt-2 block text-sm font-medium">Clique para enviar</span>
+                        </div>
+                        <img id="user-image-preview" class="hidden image-preview" alt="Preview do Usuário">
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button id="generate-button" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-all shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Sincronizar Estilo
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção de Resultados -->
+        <div id="results-section" class="hidden">
+            <div id="loading-indicator" class="text-center py-10">
+                <div class="loader mx-auto"></div>
+                <p class="mt-4 text-gray-600">Analisando e criando looks... Isso pode levar um momento.</p>
+            </div>
+            <div id="results-content" class="hidden">
+                 <h2 class="text-3xl font-playfair text-center mb-8">Looks Sugeridos</h2>
+                 <div id="outfits-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <!-- Cards de looks serão inseridos aqui -->
+                 </div>
+                 <div class="text-center mt-8">
+                    <button id="reset-button" class="bg-gray-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-800 transition-all shadow-md">
+                        Analisar Novamente
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Erro -->
+        <div id="error-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Ocorreu um Erro</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p id="error-message" class="text-sm text-gray-500">Mensagem de erro aqui.</p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="close-modal-button" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Elementos da UI
+        const envImageInput = document.getElementById('env-image-input');
+        const userImageInput = document.getElementById('user-image-input');
+        const envImagePreview = document.getElementById('env-image-preview');
+        const userImagePreview = document.getElementById('user-image-preview');
+        const envLabel = document.getElementById('env-label');
+        const userLabel = document.getElementById('user-label');
+        const generateButton = document.getElementById('generate-button');
+        const uploadSection = document.getElementById('upload-section');
+        const resultsSection = document.getElementById('results-section');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const resultsContent = document.getElementById('results-content');
+        const outfitsGrid = document.getElementById('outfits-grid');
+        const resetButton = document.getElementById('reset-button');
+        const errorModal = document.getElementById('error-modal');
+        const errorMessage = document.getElementById('error-message');
+        const closeModalButton = document.getElementById('close-modal-button');
+
+        let envImageBase64 = null;
+        let userImageBase64 = null;
+
+        // Função para mostrar o modal de erro
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorModal.classList.remove('hidden');
+            loadingIndicator.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+        }
+
+        // Função para esconder o modal de erro
+        closeModalButton.addEventListener('click', () => {
+            errorModal.classList.add('hidden');
+        });
+
+        // Função para converter imagem para Base64
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Lidar com a seleção de imagem
+        async function handleImageSelection(input, preview, label, storage) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 4 * 1024 * 1024) { // Limite de 4MB
+                    showError('Por favor, escolha uma imagem com menos de 4MB.');
+                    input.value = ''; // Limpa o input
+                    return;
+                }
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+                label.classList.add('hidden');
+                if (storage === 'env') {
+                    envImageBase64 = await toBase64(file);
+                } else {
+                    userImageBase64 = await toBase64(file);
+                }
+            }
+        }
+
+        envImageInput.addEventListener('change', () => handleImageSelection(envImageInput, envImagePreview, envLabel, 'env'));
+        userImageInput.addEventListener('change', () => handleImageSelection(userImageInput, userImagePreview, userLabel, 'user'));
+
+        // Lidar com o clique do botão de gerar
+        generateButton.addEventListener('click', async () => {
+            if (!envImageBase64 || !userImageBase64) {
+                showError('Por favor, envie as duas imagens antes de continuar.');
+                return;
+            }
+
+            // Esconder uploads e mostrar loading
+            uploadSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            loadingIndicator.classList.remove('hidden');
+            resultsContent.classList.add('hidden');
+            outfitsGrid.innerHTML = '';
+
+            try {
+                // 1. Chamar o Gemini para análise e sugestão de texto
+                const suggestions = await getOutfitSuggestions();
+                
+                // 2. Mostrar o conteúdo dos resultados e esconder o loading principal
+                loadingIndicator.classList.add('hidden');
+                resultsContent.classList.remove('hidden');
+
+                // 3. Gerar imagens para cada sugestão em paralelo
+                await generateOutfitImages(suggestions);
+
+            } catch (error) {
+                console.error('Erro no processo de geração:', error);
+                showError(`Ocorreu um erro ao gerar as sugestões. Detalhes: ${error.message}`);
+            }
+        });
+        
+        // Função para chamar a API do Gemini
+        async function getOutfitSuggestions() {
+            const apiKey = ""; // A chave da API será injetada pelo ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const prompt = `Como um estilista de moda especialista, analise as duas imagens a seguir: a primeira é de um ambiente/local e a segunda é de uma pessoa.
+            
+            Com base na análise (cores, estilo, formalidade do local, e características da pessoa), crie 2 sugestões de looks completos (roupas e acessórios) que combinem perfeitamente com o ambiente e valorizem a pessoa.
+            
+            Para cada sugestão, forneça:
+            1.  'titulo': Um nome criativo para o look (ex: "Elegância Urbana", "Casualidade Praiana").
+            2.  'descricao': Uma descrição detalhada das peças (roupa, calçado, acessórios), explicando o porquê da escolha.
+            3.  'prompt_imagem': Um prompt detalhado em INGLÊS para um modelo de geração de imagem (como Imagen) criar uma foto realista do look. O prompt deve descrever uma pessoa com características semelhantes à da foto, usando as roupas e acessórios sugeridos, em um estilo de fotografia de moda. Exemplo: "Fashion photography of a woman with [user features] wearing [detailed outfit description], full body shot, stylish pose, soft lighting."
+            
+            Retorne a resposta estritamente no formato JSON.`;
+
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: "image/jpeg", data: envImageBase64 } },
+                            { inlineData: { mimeType: "image/jpeg", data: userImageBase64 } }
+                        ]
+                    }
+                ],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            sugestoes: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        titulo: { type: "STRING" },
+                                        descricao: { type: "STRING" },
+                                        prompt_imagem: { type: "STRING" }
+                                    },
+                                    required: ["titulo", "descricao", "prompt_imagem"]
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`A API do Gemini respondeu com um erro: ${response.status} ${errorBody}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                 const jsonText = result.candidates[0].content.parts[0].text;
+                 const parsedJson = JSON.parse(jsonText);
+                 return parsedJson.sugestoes;
+            } else {
+                console.error("Resposta inesperada da API:", result);
+                throw new Error("Não foi possível obter as sugestões do modelo de IA.");
+            }
+        }
+
+        // Função para gerar imagens com a API Imagen
+        async function generateImage(prompt, cardId) {
+            const apiKey = ""; // A chave da API será injetada pelo ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            
+            const payload = {
+                instances: [{ prompt: prompt }],
+                parameters: { "sampleCount": 1 }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                console.error(`Erro na API Imagen para o card ${cardId}`);
+                return null; // Retorna nulo para que possamos lidar com o erro
+            }
+
+            const result = await response.json();
+            if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
+                return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+            }
+            return null;
+        }
+
+        // Função para criar os cards e chamar a geração de imagens
+        async function generateOutfitImages(suggestions) {
+            const imagePromises = suggestions.map((sugestao, index) => {
+                const cardId = `outfit-card-${index}`;
+                const cardHtml = `
+                    <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                        <div class="relative h-80 bg-gray-200">
+                             <div class="image-loader">
+                                <div class="loader"></div>
+                            </div>
+                            <img id="img-${cardId}" class="hidden w-full h-full object-cover" alt="Imagem do look gerado">
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold font-playfair mb-2">${sugestao.titulo}</h3>
+                            <p class="text-gray-600 flex-grow">${sugestao.descricao}</p>
+                        </div>
+                    </div>
+                `;
+                outfitsGrid.innerHTML += cardHtml;
+                
+                // Retorna a promessa de geração de imagem
+                return generateImage(sugestao.prompt_imagem, cardId).then(imageUrl => ({ imageUrl, cardId }));
+            });
+
+            // Processa as imagens quando elas estiverem prontas
+            for (const promise of imagePromises) {
+                try {
+                    const { imageUrl, cardId } = await promise;
+                    const cardElement = document.getElementById(cardId);
+                    if (cardElement) {
+                        const imgElement = cardElement.querySelector(`#img-${cardId}`);
+                        const loaderElement = cardElement.querySelector('.image-loader');
+                        if (imageUrl && imgElement && loaderElement) {
+                            imgElement.src = imageUrl;
+                            imgElement.classList.remove('hidden');
+                            loaderElement.classList.add('hidden');
+                        } else {
+                             loaderElement.innerHTML = '<p class="text-red-500 text-sm p-2">Falha ao gerar imagem</p>';
+                        }
+                    }
+                } catch (error) {
+                    console.error("Erro
