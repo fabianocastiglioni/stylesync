@@ -330,33 +330,47 @@
             }
         }
 
-        // Função para gerar imagens com a API Imagen
-        async function generateImage(prompt, cardId) {
-            const apiKey = "%%GEMINI_API_KEY%%";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
-            
-            const payload = {
-                instances: [{ prompt: prompt }],
-                parameters: { "sampleCount": 1 }
-            };
+        // Função para gerar imagens com a API Gemini 2.0 Flash Preview Image Generation
+async function generateImage(prompt, cardId) {
+    const apiKey = "%%GEMINI_API_KEY%%";
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`;
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+    const payload = {
+        contents: [{
+            parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+            responseModalities: ["TEXT", "IMAGE"]
+        }
+    };
 
-            if (!response.ok) {
-                console.error(`Erro na API Imagem para o card ${cardId}`);
-                return null; // Retorna nulo para que possamos lidar com o erro
-            }
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-            const result = await response.json();
-            if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
-                return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
-            }
+        if (!response.ok) {
+            console.error(`Erro na API Gemini para o card ${cardId}`);
             return null;
         }
+
+        const result = await response.json();
+
+        const parts = result?.candidates?.[0]?.content?.parts || [];
+        for (const part of parts) {
+            if (part.inlineData?.mimeType?.startsWith("image/") && part.inlineData?.data) {
+                return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            }
+        }
+
+        return null;
+    } catch (error) {
+        console.error("Erro ao gerar imagem:", error);
+        return null;
+    }
+}
 
         // Função para criar os cards e chamar a geração de imagens
         async function generateOutfitImages(suggestions) {
