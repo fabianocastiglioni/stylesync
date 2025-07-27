@@ -380,44 +380,46 @@ async function generateImage(prompt, cardId) {
 
         // Função para criar os cards e chamar a geração de imagens
         async function generateOutfitImages(suggestions) {
-            const imagePromises = suggestions.map((sugestao, index) => {
-                const cardId = `outfit-card-${index}`;
-                const cardHtml = `
-                    <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
-                    <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
-    <div class="relative bg-gray-200">
-        <div class="image-loader absolute inset-0 z-10">
-            <div class="loader"></div>
-        </div>
-        <img id="img-${cardId}" class="hidden w-full object-contain" alt="Imagem do look gerado">
-    </div>
-                `;
-                outfitsGrid.innerHTML += cardHtml;
-                
-                // Retorna a promessa de geração de imagem
-                return generateImage(sugestao.prompt_imagem, cardId).then(imageUrl => ({ imageUrl, cardId }));
-            });
+    const imagePromises = suggestions.map((sugestao, index) => {
+        const cardId = `outfit-card-${index}`;
+        const cardHtml = `
+            <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                <div class="relative bg-gray-200">
+                    <div class="image-loader absolute inset-0 z-10">
+                        <div class="loader"></div>
+                    </div>
+                    <img id="img-${cardId}" class="hidden w-full max-h-[600px] object-contain mx-auto" alt="Imagem do look gerado">
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <h3 class="text-xl font-bold font-playfair mb-2">${sugestao.titulo}</h3>
+                    <p class="text-gray-600 flex-grow">${sugestao.descricao}</p>
+                </div>
+            </div>
+        `;
+        outfitsGrid.innerHTML += cardHtml;
 
-            // Processa as imagens quando elas estiverem prontas
-            for (const promise of imagePromises) {
-                try {
-                    const { imageUrl, cardId } = await promise;
-                    const cardElement = document.getElementById(cardId);
-                    if (cardElement) {
-                        const imgElement = cardElement.querySelector(`#img-${cardId}`);
-                        const loaderElement = cardElement.querySelector('.image-loader');
-                        if (imageUrl && imgElement && loaderElement) {
-                            imgElement.src = imageUrl;
-                            imgElement.classList.remove('hidden');
-                            loaderElement.classList.add('hidden');
-                        } else {
-                             loaderElement.innerHTML = '<p class="text-red-500 text-sm p-2">Falha ao gerar imagem</p>';
-                        }
-                    }
-                } catch (error) {
-                    console.error("Erro ao processar uma imagem:", error);
+        return generateImage(sugestao.prompt_imagem, cardId).then(imageUrl => ({ imageUrl, cardId }));
+    });
+
+    for (const promise of imagePromises) {
+        try {
+            const { imageUrl, cardId } = await promise;
+            const cardElement = document.getElementById(cardId);
+            if (cardElement) {
+                const imgElement = cardElement.querySelector(`#img-${cardId}`);
+                const loaderElement = cardElement.querySelector('.image-loader');
+                if (imageUrl && imgElement && loaderElement) {
+                    imgElement.src = imageUrl;
+                    imgElement.classList.remove('hidden');
+                    loaderElement.classList.add('hidden');
+                } else {
+                    loaderElement.innerHTML = '<p class="text-red-500 text-sm p-2">Falha ao gerar imagem</p>';
                 }
             }
+        } catch (error) {
+            console.error("Erro ao processar uma imagem:", error);
+        }
+    }
         }
         
         // Função para resetar a aplicação
