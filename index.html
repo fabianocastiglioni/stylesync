@@ -384,17 +384,13 @@ async function generateImage(prompt, cardId) {
                 const cardId = `outfit-card-${index}`;
                 const cardHtml = `
                     <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
-                        <div class="relative h-80 bg-gray-200">
-                             <div class="image-loader">
-                                <div class="loader"></div>
-                            </div>
-                            <img id="img-${cardId}" class="hidden w-full h-full object-cover" alt="Imagem do look gerado">
-                        </div>
-                        <div class="p-6 flex-grow flex flex-col">
-                            <h3 class="text-xl font-bold font-playfair mb-2">${sugestao.titulo}</h3>
-                            <p class="text-gray-600 flex-grow">${sugestao.descricao}</p>
-                        </div>
-                    </div>
+                    <div id="${cardId}" class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+    <div class="relative bg-gray-200">
+        <div class="image-loader absolute inset-0 z-10">
+            <div class="loader"></div>
+        </div>
+        <img id="img-${cardId}" class="hidden w-full object-contain" alt="Imagem do look gerado">
+    </div>
                 `;
                 outfitsGrid.innerHTML += cardHtml;
                 
