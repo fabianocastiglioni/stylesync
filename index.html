@@ -262,18 +262,23 @@
         async function getOutfitSuggestions() {
             const apiKey = "%%GEMINI_API_KEY%%";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-            
+    
             const prompt = `Como um estilista de moda especialista, analise as duas imagens a seguir: a primeira é de um ambiente/local e a segunda é de uma pessoa.
-            
-            Com base na análise (cores, estilo, formalidade do local, e características da pessoa), crie 2 sugestões de looks completos (roupas e acessórios) que combinem perfeitamente com o ambiente e valorizem a pessoa.
-            
-            Para cada sugestão, forneça:
-            1.  'titulo': Um nome criativo para o look (ex: "Elegância Urbana", "Casualidade Praiana").
-            2.  'descricao': Uma descrição detalhada das peças (roupa, calçado, acessórios), explicando o porquê da escolha.
-            3.  'prompt_imagem': Um prompt detalhado em INGLÊS para um modelo de geração de imagem criar uma foto realista do look. O prompt deve descrever uma pessoa com características semelhantes à da foto da pessoa enviada, usando as roupas e acessórios sugeridos, em um estilo de fotografia de moda. A pessoa deve aparecer de corpo inteiro, dentro da foto de ambiente enviada. Exemplo: "Create a fashion photo showing the full body of a person, with their real facial features and hair, wearing [outfit details], standing naturally inside the environment from the uploaded image. Use realistic lighting, modern fashion style photography, and preserve the facial identity."
-            
-            Retorne a resposta estritamente no formato JSON.`;
 
+Com base na análise (cores, estilo, formalidade do local e características da pessoa), crie 2 sugestões de looks completos (roupas e acessórios) que combinem perfeitamente com o ambiente e valorizem a pessoa.
+
+Para cada sugestão, forneça:
+1. 'titulo': Um nome criativo para o look (ex: "Elegância Urbana", "Casualidade Praiana").
+2. 'descricao': Uma descrição detalhada das peças (roupa, calçado, acessórios), explicando o porquê da escolha.
+3. 'prompt_imagem': Um prompt detalhado em INGLÊS para um modelo de geração de imagem criar uma foto realista do look. O prompt deve descrever uma pessoa com características semelhantes à da imagem enviada (incluindo rosto e cabelo), usando as roupas e acessórios sugeridos, com as seguintes exigências:
+
+- A pessoa deve estar de corpo inteiro, totalmente visível da cabeça aos pés.
+- O rosto deve estar claramente visível e centralizado na imagem (não cortado, nem fora do quadro).
+- A cena deve mostrar a pessoa dentro do ambiente fornecido.
+- A pose deve ser natural, com iluminação realista e estilo fotográfico moderno.
+- A composição deve respeitar o enquadramento fotográfico, com espaço suficiente acima da cabeça e sem cortar nenhuma parte do corpo.
+
+Retorne a resposta estritamente no formato JSON.`;
             const payload = {
                 contents: [
                     {
