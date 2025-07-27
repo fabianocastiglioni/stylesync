@@ -265,18 +265,20 @@
     
              const prompt = `Como um estilista de moda especialista, analise as duas imagens a seguir: a primeira é de um ambiente/local e a segunda é de uma pessoa.
 
+Antes de sugerir os looks, identifique se a pessoa é uma criança, um adolescente ou um adulto, com base na imagem fornecida. Os looks devem ser apropriados para a faixa etária identificada, refletindo estilo, proporções, vestimenta e linguagem visual condizentes com a idade.
+
 Com base na análise (cores, estilo, formalidade do local e características da pessoa), crie 2 sugestões de looks completos (roupas e acessórios) que combinem perfeitamente com o ambiente e valorizem a pessoa.
 
 Para cada sugestão, forneça:
 1. 'titulo': Um nome criativo para o look (ex: "Elegância Urbana", "Casualidade Praiana").
 2. 'descricao': Uma descrição detalhada das peças (roupa, calçado, acessórios), explicando o porquê da escolha.
-3. 'prompt_imagem': Um prompt detalhado em INGLÊS para um modelo de geração de imagem criar uma foto realista do look. O prompt deve descrever uma pessoa com características semelhantes à da imagem enviada (incluindo rosto e cabelo), usando as roupas e acessórios sugeridos, com as seguintes exigências:
+3. 'prompt_imagem': Um prompt detalhado em INGLÊS para um modelo de geração de imagem criar uma foto realista do look. O prompt deve descrever uma pessoa com características semelhantes à da imagem enviada (incluindo rosto, cabelo, idade aparente e tipo físico), usando as roupas e acessórios sugeridos, com as seguintes exigências:
 
 - A pessoa deve estar completamente visível da cabeça aos pés (plano inteiro / full-body shot).
 - A imagem deve ter espaço acima da cabeça, com enquadramento profissional e sem cortes no rosto ou corpo.
 - A pessoa deve estar centralizada na imagem, com iluminação realista, pose natural e estilo de fotografia de moda.
 - O fundo deve ser o ambiente fornecido.
-- A identidade e as proporções da pessoa devem refletir a imagem enviada.
+- A identidade, idade aparente (criança, adolescente ou adulto) e proporções da pessoa devem refletir a imagem enviada.
 
 Retorne a resposta estritamente no formato JSON.`;
             
