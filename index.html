@@ -208,8 +208,8 @@
         async function handleImageSelection(input, preview, label, storage) {
             const file = input.files[0];
             if (file) {
-                if (file.size > 4 * 1024 * 1024) { // Limite de 4MB
-                    showError('Por favor, escolha uma imagem com menos de 4MB.');
+                if (file.size > 6 * 1024 * 1024) { // Limite de 6MB
+                    showError('Por favor, escolha uma imagem com menos de 6MB.');
                     input.value = ''; // Limpa o input
                     return;
                 }
