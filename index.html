@@ -261,7 +261,7 @@
         // Função para chamar a API do Gemini
         async function getOutfitSuggestions() {
             const apiKey = "%%GEMINI_API_KEY%%";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             
             const prompt = `Como um estilista de moda especialista, analise as duas imagens a seguir: a primeira é de um ambiente/local e a segunda é de uma pessoa.
             
@@ -333,7 +333,7 @@
         // Função para gerar imagens com a API Gemini 2.0 Flash Preview Image Generation
 async function generateImage(prompt, cardId) {
     const apiKey = "%%GEMINI_API_KEY%%";
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-image-generation:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{
